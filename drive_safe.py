@@ -6,7 +6,7 @@ def do(cmd):
 
 from random import random
 import random
-    
+
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
 
 from flask import Flask, render_template, request, Response, send_file
@@ -19,8 +19,8 @@ import time
 
 GPIO.setmode(GPIO.BCM)
 
-TRIG = [24,22]
-ECHO = [23,27]
+TRIG = [24, 22]
+ECHO = [23, 27]
 
 
 def setup():
@@ -30,7 +30,7 @@ def setup():
         GPIO.output(TRIG[i], False)
 
         print "Waiting For Sensor To Settle"
-        
+
 
 def distance(i):
 #    print "Distance Measurement In Progress"
@@ -43,16 +43,16 @@ def distance(i):
 
     pulse_end = 0;
     pulse_start = 0;
-    
+
     while GPIO.input(ECHO[i])==0:
         pulse_start = time.time()
 
     while GPIO.input(ECHO[i])==1:
         pulse_end = time.time()
-        
+
     if (pulse_end == 0 or pulse_start==0):
         return 1000
-        
+
     pulse_duration = pulse_end - pulse_start
 
     distance = pulse_duration * 17150
@@ -63,7 +63,7 @@ def distance(i):
 
     return distance
 
-    
+
 
 
 import os
@@ -80,7 +80,7 @@ def turnOffMotors():
 	mh.getMotor(3).run(Adafruit_MotorHAT.RELEASE)
 	#mh.getMotor(4).run(Adafruit_MotorHAT.RELEASE)
         GPIO.cleanup()
-        
+
 atexit.register(turnOffMotors)
 
 ################################# DC motor test!
@@ -94,7 +94,7 @@ def wakeup(m):
         m.setSpeed(15)
         m.run(Adafruit_MotorHAT.FORWARD);
         # turn on motor
-        m.run(Adafruit_MotorHAT.RELEASE);        
+        m.run(Adafruit_MotorHAT.RELEASE);
 
 
 wakeup(mFL)
@@ -126,11 +126,11 @@ def backward(speed, dur):
 	mFR.setSpeed(speed)
 	mFL.setSpeed(speed)
 	time.sleep(dur)
-	
+
 	mFL.run(Adafruit_MotorHAT.RELEASE)
 	mFR.run(Adafruit_MotorHAT.RELEASE)
 	return ''
-        
+
 def stop():
         mFL.run(Adafruit_MotorHAT.RELEASE)
         mFR.run(Adafruit_MotorHAT.RELEASE)
@@ -150,7 +150,7 @@ def right(speed, dur):
         print "Right "
         mFL.run(Adafruit_MotorHAT.BACKWARD)
         mFL.setSpeed(speed)
-        
+
         time.sleep(dur)
         mFL.run(Adafruit_MotorHAT.RELEASE)
         return ''
@@ -160,7 +160,7 @@ def getAttention():
         with open('../python-mindave-mobile/ATTENTION', 'r') as f:
             read_data = f.read()
             print("Read Speed: " + read_data)
-            
+
         spd=0
         if read_data == '':
             spd = 0
@@ -173,7 +173,7 @@ def getAttention():
             newSpd = (spd-50)*4
 
         return newSpd
-    
+
 stopped = True;
 turning = False;
 THRESH = 25;
@@ -190,7 +190,7 @@ while(1==1):
 #            break
 #        setSpeed(0)
 #        time.sleep(0.2)
-        
+
 	mind = 1000
 	d=[]
 

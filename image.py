@@ -17,26 +17,22 @@ def classify(n):
 	dataFile = 'images/data'+suffix
 	latestImage = 'images/latest_img.jpg'
 	latestData = 'images/latest_data'
-        do('echo "I\'m thinking." | flite')
-	do('cp /dev/shm/mjpeg/cam.jpg '+imageFile);
-	do('ln -f '+imageFile+' '+latestImage);
-	do('bash run_and_parse_inception.sh '+imageFile+ " " +dataFile)
-
-	do('ln -f '+dataFile+' '+latestData);
-
-        do('{ echo "I think I see a "; cat '+dataFile+' |  sed -e \'$ ! s/$/. or maybe a/\'; } | flite')
-
-	do('echo '+suffix+' > images/INDEX')
+	do('echo "I\'m thinking." | flite')
+	do('cp /dev/shm/mjpeg/cam.jpg ' + imageFile)
+	do('ln -f ' + imageFile + ' ' + latestImage)
+	do('bash run_and_parse_inception.sh ' + imageFile + " " + dataFile)
+	do('ln -f ' + dataFile + ' ' + latestData)
+	do('{ echo "I think I see a "; cat ' + dataFile +
+	   ' |  sed -e \'$ ! s/$/. or maybe a/\'; } | flite')
+	do('echo ' + suffix + ' > images/INDEX')
 
 
 def our_classify(n):
 	suffix = str(n)
 	imageFile = 'images/img' + suffix + '.jpg'
-        do('echo "I\'m thinking." | flite')
-	do('cp /dev/shm/mjpeg/cam.jpg ' + imageFile);
-
+	do('echo "I\'m thinking." | flite')
+	do('cp /dev/shm/mjpeg/cam.jpg ' + imageFile)
 	output = run_inference_on_image(imageFile)
-
 	do('{ echo "I think I see a " } | flite')
 	for cat, score in output.items():
-		do('{ %s (score = %.5f)  } | flite' % (human_string, score) )
+		do('{ %s (score = %.5f)  } | flite' % (human_string, score))

@@ -1,9 +1,4 @@
 import subprocess
-
-def do(cmd):
-    print(cmd)
-    p =subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-
 from random import random
 import random
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
@@ -16,14 +11,19 @@ import atexit
 
 GPIO.setmode(GPIO.BCM)
 
-TRIG = [24,22]
-ECHO = [23,27]
+TRIG = [24, 22]
+ECHO = [23, 27]
+
+
+def do(cmd):
+    print(cmd)
+    p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 
 
 def setup():
     for i in range(len(TRIG)):
-        GPIO.setup(TRIG[i],GPIO.OUT)
-        GPIO.setup(ECHO[i],GPIO.IN)
+        GPIO.setup(TRIG[i], GPIO.OUT)
+        GPIO.setup(ECHO[i], GPIO.IN)
         GPIO.output(TRIG[i], False)
 
         print "Waiting For Sensor To Settle"
@@ -60,10 +60,9 @@ def distance(i):
 
     return distance
 
-
-
 # create a default object, no changes to I2C address or frequency
 mh = Adafruit_MotorHAT(addr=0x60)
+
 
 # recommended for auto-disabling motors on shutdown!
 def turnOffMotors():
@@ -81,12 +80,13 @@ mFL = mh.getMotor(1)
 #mBR = mh.getMotor(3)
 mFR = mh.getMotor(3)
 
+
 def wakeup(m):
-        # set the speed to start, from 0 (off) to 255 (max speed)
-        m.setSpeed(150)
-        m.run(Adafruit_MotorHAT.FORWARD);
-        # turn on motor
-        m.run(Adafruit_MotorHAT.RELEASE);
+    # set the speed to start, from 0 (off) to 255 (max speed)
+    m.setSpeed(150)
+    m.run(Adafruit_MotorHAT.FORWARD);
+    # turn on motor
+    m.run(Adafruit_MotorHAT.RELEASE);
 
 
 wakeup(mFL)
@@ -95,21 +95,24 @@ wakeup(mFR)
 #wakeup(mBL)
 setup()
 
+
 def gof():
-        #mBR.run(Adafruit_MotorHAT.BACKWARD)
-        #mBL.run(Adafruit_MotorHAT.BACKWARD)
-        mFL.run(Adafruit_MotorHAT.FORWARD)
-        mFR.run(Adafruit_MotorHAT.FORWARD)
-        #mBR.setSpeed(200)
-        #mBL.setSpeed(200)
-        mFR.setSpeed(200)
-        mFL.setSpeed(200)
+    #mBR.run(Adafruit_MotorHAT.BACKWARD)
+    #mBL.run(Adafruit_MotorHAT.BACKWARD)
+    mFL.run(Adafruit_MotorHAT.FORWARD)
+    mFR.run(Adafruit_MotorHAT.FORWARD)
+    #mBR.setSpeed(200)
+    #mBL.setSpeed(200)
+    mFR.setSpeed(200)
+    mFL.setSpeed(200)
+
 
 def setSpeed(speed):
     #mBR.setSpeed(speed)
     #mBL.setSpeed(speed)
     mFR.setSpeed(speed)
     mFL.setSpeed(speed)
+
 
 def backward(speed, dur):
 	print "Backward! "
@@ -123,45 +126,48 @@ def backward(speed, dur):
 	mFR.run(Adafruit_MotorHAT.RELEASE)
 	return ''
 
+
 def stop():
-        mFL.run(Adafruit_MotorHAT.RELEASE)
-        mFR.run(Adafruit_MotorHAT.RELEASE)
-        #mBL.run(Adafruit_MotorHAT.RELEASE)
-        #mBR.run(Adafruit_MotorHAT.RELEASE)
+    mFL.run(Adafruit_MotorHAT.RELEASE)
+    mFR.run(Adafruit_MotorHAT.RELEASE)
+    #mBL.run(Adafruit_MotorHAT.RELEASE)
+    #mBR.run(Adafruit_MotorHAT.RELEASE)
+
 
 def left(speed, dur):
-        print "Left "
-        mFR.run(Adafruit_MotorHAT.BACKWARD)
-        mFR.setSpeed(speed)
+    print "Left "
+    mFR.run(Adafruit_MotorHAT.BACKWARD)
+    mFR.setSpeed(speed)
 
-        time.sleep(dur)
-        mFR.run(Adafruit_MotorHAT.RELEASE)
-        return ''
+    time.sleep(dur)
+    mFR.run(Adafruit_MotorHAT.RELEASE)
+    return ''
+
 
 def right(speed, dur):
-        print "Right "
-        mFL.run(Adafruit_MotorHAT.BACKWARD)
-        mFL.setSpeed(speed)
+    print "Right "
+    mFL.run(Adafruit_MotorHAT.BACKWARD)
+    mFL.setSpeed(speed)
 
-        time.sleep(dur)
-        mFL.run(Adafruit_MotorHAT.RELEASE)
-        return ''
+    time.sleep(dur)
+    mFL.run(Adafruit_MotorHAT.RELEASE)
+    return ''
 
 
 def getAttention():
-        with open('../python-mindave-mobile/ATTENTION', 'r') as f:
-            read_data = f.read()
-            print("Read Speed: " + read_data)
+    with open('../python-mindave-mobile/ATTENTION', 'r') as f:
+        read_data = f.read()
+        print("Read Speed: " + read_data)
 
-        spd=0
-        if read_data == '':
-            spd = 0
-        else:
-            spd = int(read_data)
+    spd = 0
+    if read_data == '':
+        spd = 0
+    else:
+        spd = int(read_data)
 
-        if (spd < 50):
-            newSpd = 0
-        else:
-            newSpd = (spd-50)*4
+    if (spd < 50):
+        newSpd = 0
+    else:
+        newSpd = (spd-50)*4
 
-        return newSpd
+    return newSpd

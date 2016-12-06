@@ -1,10 +1,7 @@
 from image import our_classify
 import subprocess
 from random import random
-import random
 from Adafruit_MotorHAT import Adafruit_MotorHAT, Adafruit_DCMotor
-from flask import Flask, render_template, request, Response, send_file
-from camera_pi import Camera
 import RPi.GPIO as GPIO
 import time
 import os
@@ -23,32 +20,28 @@ def do(cmd):
 
 def setup():
     for i in range(len(TRIG)):
-        GPIO.setup(TRIG[i],GPIO.OUT)
-        GPIO.setup(ECHO[i],GPIO.IN)
+        GPIO.setup(TRIG[i], GPIO.OUT)
+        GPIO.setup(ECHO[i], GPIO.IN)
         GPIO.output(TRIG[i], False)
 
         print "Waiting For Sensor To Settle"
 
 
 def distance(i):
-#    print "Distance Measurement In Progress"
-
-    GPIO.output(TRIG[i], True)
-
+	GPIO.output(TRIG[i], True)
     time.sleep(0.00001)
-
     GPIO.output(TRIG[i], False)
 
-    pulse_end = 0;
-    pulse_start = 0;
+    pulse_end = 0
+    pulse_start = 0
 
-    while GPIO.input(ECHO[i])==0:
+    while GPIO.input(ECHO[i]) == 0:
         pulse_start = time.time()
 
-    while GPIO.input(ECHO[i])==1:
+    while GPIO.input(ECHO[i]) == 1:
         pulse_end = time.time()
 
-    if (pulse_end == 0 or pulse_start==0):
+    if (pulse_end == 0 or pulse_start == 0):
         return 1000
 
     pulse_duration = pulse_end - pulse_start
@@ -57,13 +50,12 @@ def distance(i):
 
     distance = round(distance, 2)
 
- #   print "Distance:",distance,"cm"
-
     return distance
 
 
 # create a default object, no changes to I2C address or frequency
 mh = Adafruit_MotorHAT(addr=0x60)
+
 
 # recommended for auto-disabling motors on shutdown!
 def turnOffMotors():
@@ -71,15 +63,17 @@ def turnOffMotors():
 	#mh.getMotor(2).run(Adafruit_MotorHAT.RELEASE)
 	mh.getMotor(3).run(Adafruit_MotorHAT.RELEASE)
 	#mh.getMotor(4).run(Adafruit_MotorHAT.RELEASE)
-        GPIO.cleanup()
+	GPIO.cleanup()
 
 atexit.register(turnOffMotors)
 
+
 ################################# DC motor test!
 mFL = mh.getMotor(1)
-#mBL = mh.getMotor(2)
-#mBR = mh.getMotor(3)
+# mBL = mh.getMotor(2)
+# mBR = mh.getMotor(3)
 mFR = mh.getMotor(3)
+
 
 def wakeup(m):
         # set the speed to start, from 0 (off) to 255 (max speed)
@@ -90,26 +84,29 @@ def wakeup(m):
 
 
 wakeup(mFL)
-#wakeup(mBL)
+# wakeup(mBL)
 wakeup(mFR)
-#wakeup(mBL)
+# wakeup(mBL)
 setup()
 
+
 def gof():
-        #mBR.run(Adafruit_MotorHAT.BACKWARD)
-        #mBL.run(Adafruit_MotorHAT.BACKWARD)
-        mFL.run(Adafruit_MotorHAT.FORWARD)
-        mFR.run(Adafruit_MotorHAT.FORWARD)
-        #mBR.setSpeed(200)
-        #mBL.setSpeed(200)
-        mFR.setSpeed(200)
-        mFL.setSpeed(200)
+    # mBR.run(Adafruit_MotorHAT.BACKWARD)
+    # mBL.run(Adafruit_MotorHAT.BACKWARD)
+    mFL.run(Adafruit_MotorHAT.FORWARD)
+    mFR.run(Adafruit_MotorHAT.FORWARD)
+    # mBR.setSpeed(200)
+    # mBL.setSpeed(200)
+    mFR.setSpeed(200)
+    mFL.setSpeed(200)
+
 
 def setSpeed(speed):
-    #mBR.setSpeed(speed)
-    #mBL.setSpeed(speed)
+    # mBR.setSpeed(speed)
+    # mBL.setSpeed(speed)
     mFR.setSpeed(speed)
     mFL.setSpeed(speed)
+
 
 def backward(speed, dur):
 	print "Backward! "
@@ -118,16 +115,17 @@ def backward(speed, dur):
 	mFR.setSpeed(speed)
 	mFL.setSpeed(speed)
 	time.sleep(dur)
-
 	mFL.run(Adafruit_MotorHAT.RELEASE)
 	mFR.run(Adafruit_MotorHAT.RELEASE)
 	return ''
+
 
 def stop():
         mFL.run(Adafruit_MotorHAT.RELEASE)
         mFR.run(Adafruit_MotorHAT.RELEASE)
         #mBL.run(Adafruit_MotorHAT.RELEASE)
         #mBR.run(Adafruit_MotorHAT.RELEASE)
+
 
 def left(speed, dur):
         print "Left "
@@ -137,6 +135,7 @@ def left(speed, dur):
         time.sleep(dur)
         mFR.run(Adafruit_MotorHAT.RELEASE)
         return ''
+
 
 def right(speed, dur):
         print "Right "
@@ -153,7 +152,7 @@ def getAttention():
             read_data = f.read()
             print("Read Speed: " + read_data)
 
-        spd=0
+        spd = 0
         if read_data == '':
             spd = 0
         else:
@@ -166,13 +165,13 @@ def getAttention():
 
         return newSpd
 
-stopped = True;
-turning = False;
-THRESH = 25;
-turnCount = 0;
-maxTurnCount = 3;
+stopped = True
+turning = False
+THRESH = 25
+turnCount = 0
+maxTurnCount = 3
 
-while(1==1):
+while(1 == 1):
 	print("driving!")
 
 #	while True:
@@ -187,46 +186,46 @@ while(1==1):
 	d=[]
 
 	for i in range(len(TRIG)):
-		d.append( distance(i));
+		d.append(distance(i))
 		if d[i] < mind:
 			mind = d[i]
-		print(d[i]);
+		print(d[i])
 
 	print(d)
 	print("Min d " + str(mind))
 
-	if (mind<6 and stopped==True and turning==True):
+	if (mind<6 and stopped == True and turning == True):
 		do('echo "backing up." | flite ')
 		backward(255, 1)
 	elif (turnCount > maxTurnCount):
 		do('echo "backing up." | flite ')
-		backward(255, 1);
-		turnCount = 0;
-	elif (mind>=THRESH and stopped==True):
-		stopped=False;
-		turning = False;
-		gof();
+		backward(255, 1)
 		turnCount = 0
-	elif (mind<THRESH and stopped==False):
-		stopped=True;
+	elif (mind >= THRESH and stopped == True):
+		stopped = False
+		turning = False
+		gof()
+		turnCount = 0
+	elif (mind < THRESH and stopped == False):
+		stopped = True
 
-	elif (mind<THRESH and stopped==True):
-		if (turning==False):
-			stop();
-			turning=True
+	elif (mind < THRESH and stopped == True):
+		if (turning == False):
+			stop()
+			turning = True
 		else:
-			turnCount+=1
+			turnCount += 1
 
-		if random.randrange(0,2) == 1:
+		if random.randrange(0, 2) == 1:
 		#if d[2] > d[0]:
 			do('echo "turning left." | flite ')
-			left(255, 0.5);
+			left(255, 0.5)
 		else:
 			do('echo "turning right." | flite ')
-			right(255, 0.5);
+			right(255, 0.5)
 
-		time.sleep(0.3);
-		stopped=True
+		time.sleep(0.3)
+		stopped = True
 
 		# CLASSIFY
 
